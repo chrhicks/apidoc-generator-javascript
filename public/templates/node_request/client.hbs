@@ -1,0 +1,28 @@
+var request = require('request');
+
+function {{constructorName}} (host) {
+  {{#clients}}
+  (function {{objectName}}() {
+    {{#methods}}
+      function {{functionName}}({{functionParametersJs}}) {
+
+      }
+
+    {{/methods}}
+
+    return {
+      {{#methods}}
+      {{functionName}}: {{functionName}}
+      {{/methods}}
+    }
+  }());
+
+  {{/clients}}
+  {{#clients}}
+  this.{{objectName}} = {{objectName}};
+  {{/clients}}
+}
+
+
+
+module.exports = {{constructorName}}

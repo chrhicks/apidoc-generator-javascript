@@ -1,0 +1,212 @@
+{
+    "name": "portfolios",
+    "description": "A user's portfolio",
+    "base_url": "http://portfolios.svc.photocracy.net",
+    "apidoc": {
+      "version": "0.9.34"
+    },
+
+    "imports": [
+
+    ],
+
+    "enums": {
+      "visibility": {
+        "description": "Controls who can view the profile",
+        "values": [
+          { "name": "user", "description": "Only the photographer can view this portfolio" },
+          { "name": "public", "description": "Anybody, including non logged in users, can view this portfolio" }
+        ]
+      }
+    },
+
+    "models": {
+      "portfolio": {
+        "fields": [
+          { "name": "guid", "type": "uuid" },
+          { "name": "user_guid", "type": "uuid" },
+          { "name": "photo_guid", "type": "uuid", "required": false },
+          { "name": "cover_photo_guid", "type": "uuid", "required": false },
+          { "name": "name", "type": "string", "required": false },
+          { "name": "bio", "type": "string", "required": false },
+          { "name": "sets", "type": "[portfolio_set]" }
+        ]
+      },
+      "portfolio_set": {
+        "fields": [
+          { "name": "guid", "type": "uuid" },
+          { "name": "name", "type": "string" },
+          { "name": "images", "type": "[uuid]" },
+          { "name": "visibility", "type": "visibility", "default": "public" }
+        ]
+      },
+      "update_portfolio_set_form": {
+        "fields": [
+          { "name": "name", "type": "string", "required": false },
+          { "name": "visibility", "type": "visibility", "required": false }
+        ]
+      },
+      "new_set_form": {
+        "fields": [
+          { "name": "name", "type": "string" }
+        ]
+      },
+      "new_set_image_form": {
+        "fields": [
+          { "name": "image_guid", "type": "uuid" }
+        ]
+      },
+      "new_portfolio_form": {
+        "fields": [
+          { "name": "user_guid", "type": "uuid" }
+        ]
+      },
+      "portfolio_form": {
+        "fields": [
+          { "name": "photo_guid", "type": "uuid", "required": false },
+          { "name": "cover_photo_guid", "type": "uuid", "required": false },
+          { "name": "name", "type": "string", "required": false },
+          { "name": "bio", "type": "string", "required": false },
+          { "name": "sets", "type": "[portfolio_set]" }
+        ]
+      },
+      "update_portfolio_form": {
+        "fields": [
+          { "name": "photo_guid", "type": "uuid", "required": false },
+          { "name": "cover_photo_guid", "type": "uuid", "required": false },
+          { "name": "name", "type": "string", "required": false },
+          { "name": "bio", "type": "string", "required": false }
+        ]
+      },
+      "error": {
+        "fields": [
+          { "name": "code", "type": "string", "description": "Error code", "example": "USER_NOT_FOUND" },
+          { "name": "message", "type": "string", "description": "Human readable message describing error.", "example": "The referenced user was not found in the system." }
+        ]
+      }
+    },
+
+    "resources": {
+      "portfolio": {
+        "operations": [
+          {
+            "method": "GET",
+            "description": "Retrieve a user's portfolio",
+            "path": "/:user_guid",
+            "responses": {
+              "200": { "type": "portfolio" },
+              "404": { "type": "unit" }
+            }
+          },
+          {
+            "method": "POST",
+            "description": "Create a portfolio for a user",
+            "body": { "type": "new_portfolio_form"},
+            "responses": {
+              "200": { "type": "portfolio" },
+              "409": { "type": "[error]" }
+            }
+          },
+          {
+            "method": "PUT",
+            "description": "Update a portfolio for a user. Missing fields will be deleted from the db",
+            "path": "/:user_guid",
+            "body": { "type": "portfolio_form"},
+            "responses": {
+              "200": { "type": "portfolio" },
+              "409": { "type": "[error]" }
+            }
+          },
+          {
+            "method": "PATCH",
+            "description": "Update a portfolio for a user. Only present fields will be modified. Missing fields will be ignored.",
+            "path": "/:user_guid",
+            "body": { "type": "update_portfolio_form"},
+            "responses": {
+              "200": { "type": "portfolio" },
+              "409": { "type": "[error]" }
+            }
+          }
+        ]
+      },
+      "portfolio_set": {
+        "operations": [
+          {
+            "method": "POST",
+            "path": "/:user_guid/:portfolio_guid",
+            "description": "Add a set to a portfolio",
+            "body": { "type": "new_set_form" },
+            "parameters": [
+              { "name": "user_guid", "type": "uuid" },
+              { "name": "portfolio_guid", "type": "uuid" }
+            ],
+            "responses": {
+              "200": { "type": "portfolio_set" },
+              "409": { "type": "[error]" }
+            }
+          },
+          {
+            "method": "PATCH",
+            "path": "/:user_guid/:portfolio_guid/:set_guid",
+            "description": "Update a portfolio set",
+            "body": { "type": "update_portfolio_set_form" },
+            "parameters": [
+              { "name": "user_guid", "type": "uuid" },
+              { "name": "portfolio_guid", "type": "uuid" },
+              { "name": "set_guid", "type": "uuid" }
+            ],
+            "responses": {
+              "200": { "type": "portfolio_set" },
+              "404": { "type": "unit" },
+              "409": { "type": "[error]" }
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/:user_guid/:portfolio_guid",
+            "description": "Remove a set from a portfolio",
+            "parameters": [
+              { "name": "user_guid", "type": "uuid" },
+              { "name": "portfolio_guid", "type": "uuid" },
+              { "name": "set_guid", "type": "uuid" }
+            ],
+            "responses": {
+              "200": { "type": "boolean" },
+              "409": { "type": "[error]" }
+            }
+          },
+          {
+            "method": "POST",
+            "path": "/:user_guid/:portfolio_guid/:set_guid/image",
+            "description": "Adds an image to a set",
+            "body": { "type": "new_set_image_form" },
+            "parameters": [
+              { "name": "user_guid", "type": "uuid" },
+              { "name": "portfolio_guid", "type": "uuid" },
+              { "name": "set_guid", "type": "uuid" }
+            ],
+            "responses": {
+              "200": { "type": "portfolio_set" },
+              "409": { "type": "[error]" }
+            }
+          },
+          {
+            "method": "DELETE",
+            "path": "/:user_guid/:portfolio_guid/:set_guid/image",
+            "description": "Remove an image from a set",
+            "parameters": [
+              { "name": "user_guid", "type": "uuid" },
+              { "name": "image_guid", "type": "uuid" },
+              { "name": "portfolio_guid", "type": "uuid" },
+              { "name": "set_guid", "type": "uuid" }
+            ],
+            "responses": {
+              "200": { "type": "portfolio_set" },
+              "409": { "type": "[error]" }
+            }
+          }
+        ]
+      }
+
+    }
+}

@@ -1,0 +1,287 @@
+{
+  "name": "users",
+  "description": "API for accessing user data.",
+  "base_url": "http://users.svc.photocracy.net",
+  "apidoc": {
+    "version": "0.9.34"
+  },
+
+  "enums": { },
+
+  "models": {
+    "user" : {
+      "fields": [
+        { "name": "guid", "type": "uuid", "example": "25892e17-80f6-415f-9c65-7395632f0223" },
+        { "name": "created_at", "type": "date-time-iso8601", "example": "2014-04-29T11:56:52Z" },
+        { "name": "updated_at", "type": "date-time-iso8601", "example": "2014-04-29T11:56:52Z" },
+        { "name": "email", "type": "string", "example": "username@example.com" },
+        { "name": "first_name", "type": "string", "example": "John", "required": false },
+        { "name": "last_name", "type": "string", "example": "Smith", "required": false },
+        { "name": "vanity_key", "type": "string", "example": "jsmith", "required": false },
+        { "name": "locations", "type": "[location]", "example": "[10016]", "required": false },
+        { "name": "followers_count", "type": "integer", "default": 0 },
+        { "name": "following_count", "type": "integer", "default": 0 },
+        { "name": "likes_count", "type": "integer", "default": 0 }
+      ]
+    },
+    "user_form": {
+      "fields": [
+        { "name": "email", "type": "string", "example": "username@example.com" },
+        { "name": "first_name", "type": "string", "example": "John", "required": false },
+        { "name": "last_name", "type": "string", "example": "Smith", "required": false },
+        { "name": "vanity_key", "type": "string", "example": "jsmith", "required": false },
+        { "name": "create_portfolio", "type": "boolean", "default": false },
+        { "name": "locations", "type": "[location]", "required": false },
+        { "name": "password", "type": "string" }
+      ]
+    },
+    "user_update_form": {
+      "fields": [
+        { "name": "email", "type": "string", "example": "username@example.com", "required": false },
+        { "name": "first_name", "type": "string", "example": "John", "required": false },
+        { "name": "last_name", "type": "string", "example": "Smith", "required": false },
+        { "name": "vanity_key", "type": "string", "example": "jsmith", "required": false },
+        { "name": "password", "type": "string", "required": false },
+        { "name": "locations", "type": "[location]", "required": false }
+      ]
+    },
+    "user_authenticate_form": {
+      "fields": [
+        { "name": "email", "type": "string", "example": "username@example.com" },
+        { "name": "password", "type": "string" }
+      ]
+    },
+    "forgot_password": {
+      "fields": [
+        { "name": "email", "type": "string" },
+        { "name": "token", "type": "string" },
+        { "name": "created_at", "type": "date-time-iso8601" }
+      ]
+    },
+    "forgot_password_form": {
+      "fields": [
+        { "name": "email", "type": "string" }
+      ]
+    },
+    "location": {
+      "fields": [
+        { "name": "zip", "type": "string", "description": "The 5 digit zip code of the location" },
+        { "name": "primary", "type": "boolean", "default": false }
+      ]
+    },
+    "user_follow_form": {
+      "fields": [
+        { "name": "user_follows", "type": "UUID", "description": "The person that wants to follow a user" },
+        { "name": "user_followed", "type": "UUID", "description": "The user to follow" }
+      ]
+    },
+    "account_detail": {
+      "fields": [
+        { "name": "shipping_address", "type": "address", "description": "Address we use to ship things like business cards, etc", "required": false },
+        { "name": "billing_address", "type": "address", "description": "Address we use for payment to photographers", "required": false },
+        { "name": "phone", "type": "string", "description": "Phone Number", "required": false }
+      ]
+    },
+    "address": {
+      "fields": [
+        { "name": "address1", "type": "string", "description": "Address Line 1" },
+        { "name": "address2", "type": "string", "description": "Address Line 2", "required": false },
+        { "name": "city", "type": "string", "description": "City" },
+        { "name": "state", "type": "string", "description": "State or Province" },
+        { "name": "zipcode", "type": "string", "description": "Zip Code" },
+        { "name": "country", "type": "string", "description": "Country" },
+        { "name": "phone", "type": "string", "description": "Phone Number - used for billing addresses", "required": false }
+      ]
+    },
+    "hire_request": {
+      "fields": [
+        { "name": "user_guid", "type": "uuid", "description": "The ID of the person initiating the request" },
+        { "name": "photographer_guid", "type": "uuid", "description": "The ID of the photographer being inquired about." },
+        { "name": "event_date", "type": "string", "description": "The date the proposed job will take place" },
+        { "name": "event_location", "type": "string", "description": "The location for the proposed job" },
+        { "name": "event_budget", "type": "string", "description": "The budget ($$$) for the event" },
+        { "name": "message", "type": "string", "description": "Message describing the detail of the job" }
+      ]
+    },
+    "error": {
+      "fields": [
+        { "name": "code", "type": "string", "description": "Error code", "example": "USER_NOT_FOUND" },
+        { "name": "message", "type": "string", "description": "Human readable message describing error.", "example": "The referenced user was not found in the system." }
+      ]
+    },
+    "healthcheck": {
+      "fields": [
+        { "name": "status", "type": "string" }
+      ]
+    }
+  },
+
+  "resources": {
+    "user": {
+      "operations": [
+        {
+          "method": "GET",
+          "description": "Find a user.",
+          "parameters": [
+            { "name": "guid", "type": "uuid", "required": false, "description": "The user's guid." },
+            { "name": "email", "type": "string", "required": false, "description": "The user's email address." },
+            { "name": "vanity_key", "type": "string", "required": false, "description": "The user's vanity url key." }
+          ],
+          "responses": {
+            "200": { "type": "user" }
+          }
+        },
+        {
+          "method": "POST",
+          "description": "Creates a user.",
+          "body": { "type": "user_form"},
+          "responses": {
+            "200": { "type": "user" },
+            "409": { "type": "[error]" }
+          }
+        },
+        {
+          "method": "POST",
+          "description": "Authenticate a user.",
+          "path": "/authenticate",
+          "body": { "type": "user_authenticate_form" },
+          "responses": {
+            "200": { "type": "user" },
+            "409": { "type": "[error]" }
+          }
+        },
+        {
+          "method": "POST",
+          "description": "Follow a user.",
+          "path": "/follow",
+          "body": { "type": "user_follow_form" },
+          "responses": {
+            "200": { "type": "boolean" },
+            "409": { "type": "[error]" }
+          }
+        },
+        {
+          "method": "POST",
+          "description": "Unfollow a user.",
+          "path": "/unfollow",
+          "body": { "type": "user_follow_form" },
+          "responses": {
+            "200": { "type": "boolean" },
+            "409": { "type": "[error]" }
+          }
+        },
+        {
+          "method": "GET",
+          "description": "Gets the people following the user",
+          "path": "/followers/:guid",
+          "parameters": [
+            { "name": "guid", "type": "uuid", "description": "The user's guid." }
+          ],
+          "responses": {
+            "200": { "type": "[uuid]" },
+            "409": { "type": "[error]" }
+          }
+        },
+        {
+          "method": "GET",
+          "description": "Gets the people the user follows",
+          "path": "/following/:guid",
+          "parameters": [
+            { "name": "guid", "type": "uuid", "description": "The user's guid." }
+          ],
+          "responses": {
+            "200": { "type": "[uuid]" },
+            "409": { "type": "[error]" }
+          }
+        },
+        {
+          "method": "PUT",
+          "description": "Update information about a user.",
+          "path": "/:guid",
+          "body": { "type": "user_update_form" },
+          "responses": {
+            "200": { "type": "user" },
+            "409": { "type": "[error]" }
+          }
+        }
+      ]
+    },
+    "forgot_password": {
+      "operations": [
+        {
+          "method": "POST",
+          "description": "Creates forgot password request for a user identified by the provided email address.",
+          "body": { "type": "forgot_password_form"},
+          "responses": {
+            "200": { "type": "forgot_password" },
+            "409": { "type": "[error]" }
+          }
+        },
+        {
+          "method": "PUT",
+          "description": "Validates a forgot password token. If valid, return true.",
+          "path": "/:token",
+          "responses": {
+            "200": { "type": "user" },
+            "409": { "type": "[error]" }
+          }
+        }
+      ]
+    },
+    "account_detail": {
+      "operations": [
+        {
+          "method": "GET",
+          "description": "Get account details for a user.",
+          "path": "/:guid",
+          "parameters": [
+            { "name": "guid", "type": "uuid", "description": "The user's guid." }
+          ],
+          "responses": {
+            "200": { "type": "account_detail" },
+            "404": { "type": "unit" },
+            "409": { "type": "[error]" }
+          }
+        },
+        {
+          "method": "PUT",
+          "description": "Update account details for a user. Must provide all data. Anything left out will be lost",
+          "path": "/:guid",
+          "body": { "type": "account_detail"},
+          "parameters": [
+            { "name": "guid", "type": "uuid", "description": "The user's guid." }
+          ],
+          "responses": {
+            "200": { "type": "account_detail" },
+            "404": { "type": "unit" },
+            "409": { "type": "[error]" }
+          }
+        }
+      ]
+    },
+    "hire_request": {
+      "operations": [
+        {
+          "method": "POST",
+          "description": "Create a hire request. Emails Customer Service with details.",
+          "body": { "type" : "hire_request"},
+          "responses": {
+            "200": { "type": "boolean" },
+            "409": { "type": "[error]" }
+          }
+        }
+      ]
+    },
+    "healthcheck": {
+      "operations": [
+        {
+          "method": "GET",
+          "description": "Healthcheck for this service",
+          "responses": {
+            "200": { "type": "healthcheck" }
+          }
+        }
+      ]
+    }
+  }
+}

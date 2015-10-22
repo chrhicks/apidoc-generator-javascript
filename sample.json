@@ -1,0 +1,605 @@
+{
+  "apidoc": {
+    "version": "0.9.34"
+  },
+  "name": "portfolios",
+  "organization": {
+    "key": "photoop"
+  },
+  "application": {
+    "key": "portfolios"
+  },
+  "namespace": "photoop.portfolios.v0",
+  "version": "0.0.1",
+  "base_url": "http://portfolios.svc.photocracy.net",
+  "description": "A user's portfolio",
+  "info": {},
+  "headers": [],
+  "imports": [],
+  "enums": [
+    {
+      "name": "visibility",
+      "plural": "visibilities",
+      "description": "Controls who can view the profile",
+      "values": [
+        {
+          "name": "user",
+          "description": "Only the photographer can view this portfolio"
+        },
+        {
+          "name": "public",
+          "description": "Anybody, including non logged in users, can view this portfolio"
+        }
+      ]
+    }
+  ],
+  "unions": [],
+  "models": [
+    {
+      "name": "error",
+      "plural": "errors",
+      "fields": [
+        {
+          "name": "code",
+          "type": "string",
+          "description": "Error code",
+          "required": true,
+          "example": "USER_NOT_FOUND"
+        },
+        {
+          "name": "message",
+          "type": "string",
+          "description": "Human readable message describing error.",
+          "required": true,
+          "example": "The referenced user was not found in the system."
+        }
+      ]
+    },
+    {
+      "name": "new_portfolio_form",
+      "plural": "new_portfolio_forms",
+      "fields": [
+        {
+          "name": "user_guid",
+          "type": "uuid",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "new_set_form",
+      "plural": "new_set_forms",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "new_set_image_form",
+      "plural": "new_set_image_forms",
+      "fields": [
+        {
+          "name": "image_guid",
+          "type": "uuid",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "portfolio",
+      "plural": "portfolios",
+      "fields": [
+        {
+          "name": "guid",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "user_guid",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "photo_guid",
+          "type": "uuid",
+          "required": false
+        },
+        {
+          "name": "cover_photo_guid",
+          "type": "uuid",
+          "required": false
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "bio",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "sets",
+          "type": "[portfolio_set]",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "portfolio_form",
+      "plural": "portfolio_forms",
+      "fields": [
+        {
+          "name": "photo_guid",
+          "type": "uuid",
+          "required": false
+        },
+        {
+          "name": "cover_photo_guid",
+          "type": "uuid",
+          "required": false
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "bio",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "sets",
+          "type": "[portfolio_set]",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "portfolio_set",
+      "plural": "portfolio_sets",
+      "fields": [
+        {
+          "name": "guid",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "images",
+          "type": "[uuid]",
+          "required": true
+        },
+        {
+          "name": "visibility",
+          "type": "visibility",
+          "default": "public",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "update_portfolio_form",
+      "plural": "update_portfolio_forms",
+      "fields": [
+        {
+          "name": "photo_guid",
+          "type": "uuid",
+          "required": false
+        },
+        {
+          "name": "cover_photo_guid",
+          "type": "uuid",
+          "required": false
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "bio",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "update_portfolio_set_form",
+      "plural": "update_portfolio_set_forms",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "visibility",
+          "type": "visibility",
+          "required": false
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "type": "portfolio",
+      "plural": "portfolios",
+      "operations": [
+        {
+          "method": "GET",
+          "path": "/portfolios/:user_guid",
+          "description": "Retrieve a user's portfolio",
+          "parameters": [
+            {
+              "name": "user_guid",
+              "type": "uuid",
+              "location": "Path",
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 200
+                }
+              },
+              "type": "portfolio"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 404
+                }
+              },
+              "type": "unit"
+            }
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "/portfolios",
+          "description": "Create a portfolio for a user",
+          "body": {
+            "type": "new_portfolio_form"
+          },
+          "parameters": [],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 200
+                }
+              },
+              "type": "portfolio"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 409
+                }
+              },
+              "type": "[error]"
+            }
+          ]
+        },
+        {
+          "method": "PUT",
+          "path": "/portfolios/:user_guid",
+          "description": "Update a portfolio for a user. Missing fields will be deleted from the db",
+          "body": {
+            "type": "portfolio_form"
+          },
+          "parameters": [
+            {
+              "name": "user_guid",
+              "type": "uuid",
+              "location": "Path",
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 200
+                }
+              },
+              "type": "portfolio"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 409
+                }
+              },
+              "type": "[error]"
+            }
+          ]
+        },
+        {
+          "method": "PATCH",
+          "path": "/portfolios/:user_guid",
+          "description": "Update a portfolio for a user. Only present fields will be modified. Missing fields will be ignored.",
+          "body": {
+            "type": "update_portfolio_form"
+          },
+          "parameters": [
+            {
+              "name": "user_guid",
+              "type": "uuid",
+              "location": "Path",
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 200
+                }
+              },
+              "type": "portfolio"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 409
+                }
+              },
+              "type": "[error]"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "portfolio_set",
+      "plural": "portfolio_sets",
+      "operations": [
+        {
+          "method": "POST",
+          "path": "/portfolio_sets/:user_guid/:portfolio_guid",
+          "description": "Add a set to a portfolio",
+          "body": {
+            "type": "new_set_form"
+          },
+          "parameters": [
+            {
+              "name": "user_guid",
+              "type": "uuid",
+              "location": "Path",
+              "required": true
+            },
+            {
+              "name": "portfolio_guid",
+              "type": "uuid",
+              "location": "Path",
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 200
+                }
+              },
+              "type": "portfolio_set"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 409
+                }
+              },
+              "type": "[error]"
+            }
+          ]
+        },
+        {
+          "method": "PATCH",
+          "path": "/portfolio_sets/:user_guid/:portfolio_guid/:set_guid",
+          "description": "Update a portfolio set",
+          "body": {
+            "type": "update_portfolio_set_form"
+          },
+          "parameters": [
+            {
+              "name": "user_guid",
+              "type": "uuid",
+              "location": "Path",
+              "required": true
+            },
+            {
+              "name": "portfolio_guid",
+              "type": "uuid",
+              "location": "Path",
+              "required": true
+            },
+            {
+              "name": "set_guid",
+              "type": "uuid",
+              "location": "Path",
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 200
+                }
+              },
+              "type": "portfolio_set"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 404
+                }
+              },
+              "type": "unit"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 409
+                }
+              },
+              "type": "[error]"
+            }
+          ]
+        },
+        {
+          "method": "DELETE",
+          "path": "/portfolio_sets/:user_guid/:portfolio_guid",
+          "description": "Remove a set from a portfolio",
+          "parameters": [
+            {
+              "name": "user_guid",
+              "type": "uuid",
+              "location": "Path",
+              "required": true
+            },
+            {
+              "name": "portfolio_guid",
+              "type": "uuid",
+              "location": "Path",
+              "required": true
+            },
+            {
+              "name": "set_guid",
+              "type": "uuid",
+              "location": "Query",
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 200
+                }
+              },
+              "type": "boolean"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 409
+                }
+              },
+              "type": "[error]"
+            }
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "/portfolio_sets/:user_guid/:portfolio_guid/:set_guid/image",
+          "description": "Adds an image to a set",
+          "body": {
+            "type": "new_set_image_form"
+          },
+          "parameters": [
+            {
+              "name": "user_guid",
+              "type": "uuid",
+              "location": "Path",
+              "required": true
+            },
+            {
+              "name": "portfolio_guid",
+              "type": "uuid",
+              "location": "Path",
+              "required": true
+            },
+            {
+              "name": "set_guid",
+              "type": "uuid",
+              "location": "Path",
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 200
+                }
+              },
+              "type": "portfolio_set"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 409
+                }
+              },
+              "type": "[error]"
+            }
+          ]
+        },
+        {
+          "method": "DELETE",
+          "path": "/portfolio_sets/:user_guid/:portfolio_guid/:set_guid/image",
+          "description": "Remove an image from a set",
+          "parameters": [
+            {
+              "name": "user_guid",
+              "type": "uuid",
+              "location": "Path",
+              "required": true
+            },
+            {
+              "name": "portfolio_guid",
+              "type": "uuid",
+              "location": "Path",
+              "required": true
+            },
+            {
+              "name": "set_guid",
+              "type": "uuid",
+              "location": "Path",
+              "required": true
+            },
+            {
+              "name": "image_guid",
+              "type": "uuid",
+              "location": "Query",
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 200
+                }
+              },
+              "type": "portfolio_set"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 409
+                }
+              },
+              "type": "[error]"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
