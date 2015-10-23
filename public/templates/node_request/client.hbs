@@ -1,20 +1,135 @@
 var request = require('request');
 
+/**
+ * ## Responses
+ * Responses from this API withh be wrapped in an envelope to assist the caller
+ * in dealing with the various responses from the service. There are no types
+ * to check against in JavaScript, so this facilitates that.
+ *
+ *    {
+ *      status: 200,
+ *      data: { name: "John", age: 29 }
+ *    }
+ *
+ * ## Logging
+ * To enable logging, use the NODE_DEBUG environment variable.
+ *
+ *    NODE_DEBUG=apidoc
+ *
+ * @constructor
+ */
 function {{constructorName}} (host) {
-  {{#clients}}
-  (function {{objectName}}() {
-    {{#methods}}
-      function {{functionName}}({{functionParametersJs}}) {
+  var showLogMessages = process.env.NODE_DEBUG ? process.env.NODE_DEBUG.indexOf('apidoc') !== -1 : false;
 
+  function log (message) {
+    if (showLogMessages) {
+      console.log('[apidoc] ' + message);
+    }
+  }
+
+  function doRequest (options) {
+    var startMs = Date.now();
+    options = options || {};
+
+    if (!options.json) {
+      options.json = true;
+    }
+    {{!-- options.timeout = 1000; --}}
+
+    log(options.method + ' ' + options.uri);
+    if (options.method === 'POST' || options.method === 'PUT' || options.method === 'PATCH') {
+      log('|--> With body:\n\t\t' + JSON.stringify(options.json));
+    }
+
+    return new Promise(function (resolve, reject) {
+      request(options, function (err, response) {
+        var duration = Date.now() - startMs;
+
+        log('Completed ' + options.method + ' ' + options.uri + ' ' + response.statusCode + ' ' + duration + 'ms');
+
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        resolve(response);
+      });
+    });
+  }
+
+  function toCamelCase (string) {
+    var parts = string.split('_');
+    var capitalized = parts.map(function (part, idx) {
+      if (idx > 0) {
+        return capitalizeFirstLetter(part);
+      }
+
+      return part;
+    });
+
+    return capitalized.join('');
+  }
+
+  function capitalizeFirstLetter (string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
+  {{#clients}}
+  var {{objectName}} = (function {{objectName}}() {
+    {{#methods}}
+      /**
+       * {{#functionParameters}}
+       * @param {{type}} {{name}}{{#description}} - {{this}}{{/description}}{{#properties}}
+       * @param {{type}} options.{{name}}{{#description}} - {{this}}{{/description}}{{/properties}}{{/functionParameters}}
+       */
+      function {{functionName}}({{functionParametersJs}}) {
+        {{#if requiresOptions}}
+        if (!(typeof options === 'object')) {
+          return Promise.reject(new Error('options parameter is required and must be of type object'));
+        }
+        {{/if}}
+
+        {{#if requiresBody}}
+        if (!options.data) {
+          return Promise.reject(new Error('options.data property is required.'));
+        }
+        {{/if}}
+
+        var url = host + {{{uriJs}}};
+        var requestOpts = {
+          {{#queryStringParameters}}
+          {{this}}: options[toCamelCase('{{this}}')],
+          {{/queryStringParameters}}
+          {{#if requestCanHaveBody}}
+          json: options.data,
+          {{/if}}
+          uri: url,
+          method: '{{method}}'
+        };
+
+        return doRequest(requestOpts).then(function (serverResponse) {
+          switch (serverResponse.statusCode) {
+            {{#responses}}
+            case {{code}}:
+              {{#if isUnitType}}
+              return Promise.resolve( { status: serverResponse.statusCode } );
+              {{else}}
+              return Promise.resolve({ status: serverResponse.statusCode, data: serverResponse.body });
+              {{/if}}
+            {{/responses}}
+            default:
+              return Promise.reject(new Error('Unknown response code: ' + serverResponse.statusCode));
+          }
+        });
       }
 
     {{/methods}}
 
     return {
       {{#methods}}
-      {{functionName}}: {{functionName}}
+      {{functionName}}: {{functionName}},
       {{/methods}}
-    }
+    };
   }());
 
   {{/clients}}
@@ -25,4 +140,4 @@ function {{constructorName}} (host) {
 
 
 
-module.exports = {{constructorName}}
+module.exports = {{constructorName}};

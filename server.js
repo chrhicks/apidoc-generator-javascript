@@ -81,7 +81,11 @@ app.post('/invocations/:key', function (req, res) {
     clients: clients
   };
 
-  console.log(util.inspect(model, false, 5, true));
+  // console.log(util.inspect(model, false, 12, true));
+
+  var fileContents = template(model);
+
+  // fs.writeFileSync('./out/' + service.name + '.js', fileContents);
 
   res.send({
     source: '',
@@ -89,7 +93,7 @@ app.post('/invocations/:key', function (req, res) {
       {
         name: service.name + '.js',
         dir: 'app/api/' + service.name,
-        contents: template(model)
+        contents: fileContents
       }
     ]
   });
