@@ -2,7 +2,7 @@ var request = require('request');
 
 /**
  * ## Responses
- * Responses from this API withh be wrapped in an envelope to assist the caller
+ * Responses from this API with be wrapped in an envelope to assist the caller
  * in dealing with the various responses from the service. There are no types
  * to check against in JavaScript, so this facilitates that.
  *
@@ -27,6 +27,19 @@ function {{constructorName}} (host) {
     }
   }
 
+  function getQueryString (options) {
+    var params = [];
+    var qs = options.qs || {};
+
+    for (var key in qs) {
+      if (qs[key]) {
+        params.push(key + '=' + qs[key]);
+      }
+    }
+
+    return params.join('&');
+  }
+
   function doRequest (options) {
     var startMs = Date.now();
     options = options || {};
@@ -34,9 +47,11 @@ function {{constructorName}} (host) {
     if (!options.json) {
       options.json = true;
     }
-    {{!-- options.timeout = 1000; --}}
 
-    log(options.method + ' ' + options.uri);
+    var queryString = getQueryString(options);
+    var url = options.uri + (queryString ? '?' + queryString : '');
+
+    log(options.method + ' ' + url);
     if (options.method === 'POST' || options.method === 'PUT' || options.method === 'PATCH') {
       log('|--> With body:\n\t\t' + JSON.stringify(options.json));
     }
@@ -45,7 +60,7 @@ function {{constructorName}} (host) {
       request(options, function (err, response) {
         var duration = Date.now() - startMs;
 
-        log('Completed ' + options.method + ' ' + options.uri + ' ' + response.statusCode + ' ' + duration + 'ms');
+        log('Completed ' + options.method + ' ' + url + ' ' + response.statusCode + ' ' + duration + 'ms');
 
         if (err) {
           reject(err);
@@ -74,6 +89,14 @@ function {{constructorName}} (host) {
       return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
+  /**
+   * Simple plain object check. This is actually really involved to be 100%
+   * accurate
+   */
+  function isObject (obj) {
+    return typeof obj === 'object' && !Array.isArray(obj);
+  }
+
   {{#clients}}
   var {{objectName}} = (function {{objectName}}() {
     {{#methods}}
@@ -85,8 +108,12 @@ function {{constructorName}} (host) {
        */
       function {{functionName}}({{functionParametersJs}}) {
         {{#if requiresOptions}}
-        if (!(typeof options === 'object')) {
-          return Promise.reject(new Error('options parameter is required and must be of type object'));
+        // if options is not defined, set it
+        options = options || {};
+
+        // otherwise if it's not the kind of object we want...
+        if (!isObject(options)) {
+          return Promise.reject(new Error('options parameter is required and must be a plain object'));
         }
         {{/if}}
 
@@ -97,10 +124,13 @@ function {{constructorName}} (host) {
         {{/if}}
 
         var url = host + {{{uriJs}}};
-        var requestOpts = {
+        var queryString = {
           {{#queryStringParameters}}
           {{this}}: options[toCamelCase('{{this}}')],
           {{/queryStringParameters}}
+        };
+        var requestOpts = {
+          qs: queryString,
           {{#if requestCanHaveBody}}
           json: options.data,
           {{/if}}
@@ -115,7 +145,13 @@ function {{constructorName}} (host) {
               {{#if isUnitType}}
               return Promise.resolve( { status: serverResponse.statusCode } );
               {{else}}
+                {{#if isReject}}
+              // Auto reject this status code
+              return Promise.reject({ status: serverResponse.statusCode, data: serverResponse.body });
+                {{else}}
               return Promise.resolve({ status: serverResponse.statusCode, data: serverResponse.body });
+                {{/if}}
+
               {{/if}}
             {{/responses}}
             default:
