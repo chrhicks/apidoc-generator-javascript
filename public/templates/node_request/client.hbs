@@ -48,6 +48,10 @@ function {{constructorName}} (host) {
       options.json = true;
     }
 
+    options.qsStringifyOptions = {
+      arrayFormat: 'repeat'
+    };
+
     var queryString = getQueryString(options);
     var url = options.uri + (queryString ? '?' + queryString : '');
 
@@ -59,8 +63,9 @@ function {{constructorName}} (host) {
     return new Promise(function (resolve, reject) {
       request(options, function (err, response) {
         var duration = Date.now() - startMs;
+        var requestHref = response.request ? response.request.href : '<unknown url>'
 
-        log('Completed ' + options.method + ' ' + url + ' ' + response.statusCode + ' ' + duration + 'ms');
+        log('Completed ' + options.method + ' ' + requestHref + ' ' + response.statusCode + ' ' + duration + 'ms');
 
         if (err) {
           reject(err);
