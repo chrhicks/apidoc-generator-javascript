@@ -2,7 +2,6 @@
 var path = require('path');
 var root = path.join(__dirname);
 var fs = require('fs');
-var util = require('util');
 var utils = require('./lib/utils');
 
 var bodyParser = require('body-parser');
@@ -10,27 +9,27 @@ var express = require('express');
 var hbs = require('hbs');
 var _ = require('lodash');
 var app = express();
-var port = 9030;
+var port = process.env.PORT || 9030;
 
 var resource = require('./lib/resource');
 
 app.set('port', (process.env.PORT || port));
 app.use(bodyParser.json());
 
-// hbs.registerPartials(path.join(root, 'public/templates/node_request/partials'));
-
 var generators = [
   {
-    key: 'node_request',
-    name: 'Node Client',
+    key: 'node_0_12',
+    name: 'Node (0.12.x)',
     language: 'JavaScript',
     description: 'Node client using the request http lib'
   }
 ];
 
 app.get('/generators', function (req, res) {
-  console.log(req.query);
-  res.send(_.take(_.drop(generators, req.query.offset), req.query.limit));
+  var offset = req.query.offset || 0;
+  var limit = req.query.limit || 10;
+
+  res.send(_.take(_.drop(generators, offset), limit));
 });
 
 app.get('/generators/:key', function (req, res) {
@@ -55,8 +54,6 @@ app.post('/invocations/:key', function (req, res) {
   var clients = [];
   var generator = _.find(generators, { key: req.params.key });
 
-// console.log('attempting to get service', service);
-//
   if (!generator) {
     res.status(409).send([
       {
@@ -67,7 +64,7 @@ app.post('/invocations/:key', function (req, res) {
 
     return;
   }
-// console.log('resources', util.inspect(resources, false, 3));
+
   resources.forEach(function (rSource) {
     clients.push(resource.createResource(rSource));
   });
@@ -81,11 +78,11 @@ app.post('/invocations/:key', function (req, res) {
     clients: clients
   };
 
-  // console.log(util.inspect(model, false, 12, true));
-
   var fileContents = template(model);
 
-  // fs.writeFileSync('./out/' + service.name + '.js', fileContents);
+  if (process.env.NODE_ENV === 'development') {
+    fs.writeFileSync('./out/' + service.name + '.js', fileContents);
+  }
 
   res.send({
     source: '',
@@ -99,9 +96,6 @@ app.post('/invocations/:key', function (req, res) {
   });
 });
 
-var server = app.listen(port, function () {
-  var host = server.address().address;
-  var port = server.address().port;
-
-  console.log('Example app listening at http://%s:%s', host, port);
+app.listen(port, function () {
+  console.log('apidoc-javascript-generator running on port %s', port);
 });
