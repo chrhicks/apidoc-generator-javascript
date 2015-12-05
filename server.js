@@ -1,4 +1,5 @@
 'use strict';
+
 var bodyParser = require('body-parser');
 var express = require('express');
 var _ = require('lodash');
@@ -6,21 +7,13 @@ var _ = require('lodash');
 var app = express();
 var port = process.env.PORT || 9030;
 
-// var resource = require('./lib/resource');
 var node12Generator = require('./lib/generators/0_12');
 
 
 app.set('port', port);
 app.use(bodyParser.json());
 
-var generators = [
-  {
-    key: 'node_0_12',
-    name: 'Node (0.12.x)',
-    language: 'JavaScript',
-    description: 'Node client using the request http lib'
-  }
-];
+var generators = require('./generators');
 
 var generatorModules = {
   'node_0_12': node12Generator
