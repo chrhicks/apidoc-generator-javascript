@@ -41,3 +41,4 @@ git-post-release:
 	@git commit -m "Releasing version $(VERSION)"
 	@git tag -a $(VERSION) -m $(VERSION)
 	@git push origin --tags
+	@git push origin master
