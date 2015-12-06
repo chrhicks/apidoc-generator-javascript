@@ -3,14 +3,6 @@ DOCKER_USERNAME = chrhicks
 VERSION = development
 CURRENT_VERSION = $(shell node -p "require('./package.json').version")
 
-docker-build:
-  docker build -t $(DOCKER_USERNAME)/$(APP_NAME):$(VERSION) .
-
-docker-push:
-  docker push $(DOCKER_USERNAME)/$(APP_NAME):$(VERSION)
-
-docker-release: docker-build docker-push
-
 release: set-npm-version docker-release git-post-release
 
 release-patch: set-patch-version release
@@ -18,6 +10,14 @@ release-patch: set-patch-version release
 release-minor: set-minor-version release
 
 release-major: set-major-version release
+
+docker-build:
+	docker build -t $(DOCKER_USERNAME)/$(APP_NAME):$(VERSION) .
+
+docker-push:
+	docker push $(DOCKER_USERNAME)/$(APP_NAME):$(VERSION)
+
+docker-release: docker-build docker-push
 
 set-patch-version:
 	$(eval VERSION := $(shell semver -i patch $(CURRENT_VERSION)))
