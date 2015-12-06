@@ -9,10 +9,14 @@
   "author": "Chris Hicks <chicks@chrhicks.com>",
   "license": "ISC",
   "devDependencies": {
-    "chai": "3.4.1",
+    "blue-tape": "0.1.11",
     "gulp": "3.9.0",
-    "gulp-mocha": "2.2.0",
-    "require-dir": "0.3.0"
+    "mkdirp": "0.5.1",
+    "proxyquire": "1.7.3",
+    "require-dir": "0.3.0",
+    "sinon": "1.17.2",
+    "tap-spec": "4.1.1",
+    "tape": "4.2.2"
   },
   "dependencies": {
     "body-parser": "^1.14.1",

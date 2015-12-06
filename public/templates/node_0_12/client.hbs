@@ -77,23 +77,6 @@ function {{constructorName}} (host) {
     });
   }
 
-  function toCamelCase (string) {
-    var parts = string.split('_');
-    var capitalized = parts.map(function (part, idx) {
-      if (idx > 0) {
-        return capitalizeFirstLetter(part);
-      }
-
-      return part;
-    });
-
-    return capitalized.join('');
-  }
-
-  function capitalizeFirstLetter (string) {
-      return string.charAt(0).toUpperCase() + string.slice(1);
-  }
-
   /**
    * Simple plain object check. This is actually really involved to be 100%
    * accurate
@@ -131,7 +114,7 @@ function {{constructorName}} (host) {
         var url = host + {{{uriJs}}};
         var queryString = {
           {{#queryStringParameters}}
-          {{this}}: options[toCamelCase('{{this}}')],
+          {{name}}: options.{{nameCamelCase}},
           {{/queryStringParameters}}
         };
         var requestOpts = {
@@ -147,16 +130,14 @@ function {{constructorName}} (host) {
           switch (serverResponse.statusCode) {
             {{#responses}}
             case {{code}}:
-              {{#if isUnitType}}
-              return Promise.resolve( { status: serverResponse.statusCode } );
-              {{else}}
-                {{#if isReject}}
-              // Auto reject this status code
-              return Promise.reject({ status: serverResponse.statusCode, data: serverResponse.body });
+              {{#if isResolve}}
+                {{#if isUnitType}}
+              return Promise.resolve();
                 {{else}}
-              return Promise.resolve({ status: serverResponse.statusCode, data: serverResponse.body });
+              return Promise.resolve(serverResponse.body);
                 {{/if}}
-
+              {{else}}
+              return Promise.reject({ status: serverResponse.statusCode, data: serverResponse.body });
               {{/if}}
             {{/responses}}
             default:
@@ -164,7 +145,6 @@ function {{constructorName}} (host) {
           }
         });
       }
-
     {{/methods}}
 
     return {
