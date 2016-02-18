@@ -2,15 +2,21 @@
   "name": "apidoc-javascript-generator",
   "version": "1.0.5",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "NODE_ENV=test gulp test"
+    "test": "NODE_ENV=test mocha --compilers js:babel-core/register --recursive",
+    "dev": "nodemon"
   },
   "author": "Chris Hicks <chicks@chrhicks.com>",
   "license": "ISC",
   "devDependencies": {
+    "babel-cli": "^6.5.1",
+    "eslint": "^2.1.0",
+    "expect": "^1.14.0",
     "gulp": "3.9.0",
     "mkdirp": "0.5.1",
+    "mocha": "^2.4.5",
+    "nodemon": "^1.8.1",
     "require-dir": "0.3.0",
     "tap-spec": "4.1.1",
     "tape": "4.2.2"
