@@ -1,11 +1,17 @@
-import require from 'require';
+{{#resources}}
+import {{{className}}} from './{{{fileName}}}';
+{{/resources}}
 
-export default class Client {
+export default class {
  constructor (host) {
    this.host = host;
+   {{#resources}}
+   this.{{className}} = new {{className}}(host);
+   {{/resources}}
  }
 
  getHost () {
-   return this.host
+   return this.host;
  }
+
 }

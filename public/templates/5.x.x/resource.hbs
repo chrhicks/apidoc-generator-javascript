@@ -1,0 +1,60 @@
+export class {{plural}} {
+  constructor (host) {
+    this.host = host;
+  }
+
+  {{#operations}}
+    {{functionName}} ({{{functionParams}}}) {
+      {{#if requiresOptions}}
+      // if options is not defined, set it
+      options = options || {};
+
+      // otherwise if it's not the kind of object we want...
+      if (!isObject(options)) {
+        return Promise.reject(new Error('options parameter is required and must be a plain object'));
+      }
+      {{/if}}
+
+      {{#if requiresBody}}
+      if (!options.data) {
+        return Promise.reject(new Error('options.data property is required.'));
+      }
+      {{/if}}
+
+      const url = `${this.host}{{{endpointUriStr}}}`;
+      const queryString = {
+        {{#queryParams}}
+        {{name}}: options.{{nameCamelCase}},
+        {{/queryParams}}
+      };
+      const requestOpts = {
+        qs: queryString,
+        {{#if requestCanHaveBody}}
+        json: options.data,
+        {{/if}}
+        uri: url,
+        method: '{{method}}'
+      };
+
+      return doRequest(requestOpts).then(function (serverResponse) {
+        switch (serverResponse.statusCode) {
+          {{#responses}}
+          case {{code}}:
+            {{#if isResolve}}
+              {{#if isUnitType}}
+            return Promise.resolve();
+              {{else}}
+            return Promise.resolve(serverResponse.body);
+              {{/if}}
+            {{else}}
+            return Promise.reject({ status: serverResponse.statusCode, data: serverResponse.body });
+            {{/if}}
+          {{/responses}}
+          default:
+            return Promise.reject(new Error('Unknown response code: ' + serverResponse.statusCode));
+        }
+      });
+    }
+
+  {{/operations}}
+}
