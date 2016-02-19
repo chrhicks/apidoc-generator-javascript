@@ -22,6 +22,7 @@
     "tape": "4.2.2"
   },
   "dependencies": {
+    "babel-core": "^6.5.2",
     "body-parser": "^1.14.1",
     "express": "^4.13.3",
     "handlebars": "^4.0.3",

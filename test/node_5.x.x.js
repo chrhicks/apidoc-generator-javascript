@@ -4,14 +4,16 @@ import expect from 'expect';
 
 import { generate } from '../lib/generators/5.x.x';
 
-const CLIENT_FILE = 'apidoc-test-light-0.0.2.js';
+const CLIENT_FILE = 'src/client.js';
 
 function generateClient() {
   const json = fs.readFileSync(`${process.cwd()}/reference-api/api-light-service.json`).toString('utf-8');
   const clientFiles = generate(JSON.parse(json));
-  // fs.createReadStream(`${process.cwd()}/public/templates/5.x.x/resources/utils.js`)
-  //   .pipe(fs.createWriteStream(`${process.cwd()}/test/dist/utils.js`));
-  clientFiles.forEach((file) => fs.writeFileSync(`${process.cwd()}/test/dist/${file.fileName}`, file.contents));
+  clientFiles.forEach((file) => {
+    if (file.fileName.startsWith('src')) {
+      fs.writeFileSync(`${process.cwd()}/test/dist/${file.fileName}`, file.contents);
+    }
+  });
 }
 
 generateClient();
