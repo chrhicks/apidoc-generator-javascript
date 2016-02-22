@@ -1,6 +1,10 @@
 # apidoc-generator-javascript
 JavaScript generators for apidoc - http://www.apidoc.me
 
+## Deploying
+
+    make release-patch
+
 ## Tests
 
-        node test/*.js |  node_modules/.bin/tap-spec
+    npm test

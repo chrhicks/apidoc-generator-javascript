@@ -1,0 +1,118 @@
+{
+  "name": "apidoc-test-light",
+  "imports": [],
+  "unions": {},
+  "enums": {},
+  "models": {
+    "passenger": {
+      "fields": [
+        { "name": "id", "type": "long" },
+        { "name": "name", "type": "string" }
+      ]
+    },
+
+    "passenger_form": {
+      "fields": [
+        { "name": "name", "type": "string" }
+      ]
+    },
+
+    "flight": {
+      "fields": [
+        { "name": "id", "type": "long" },
+        { "name": "carrier", "type": "carrier" },
+        { "name": "number", "type": "string", "example": "UA247" }
+      ]
+    },
+    "carrier": {
+      "fields": [
+        { "name": "id", "type": "long" },
+        { "name": "name", "type": "string", "example": "United Airlines" }
+      ]
+    }
+  },
+  "resources": {
+    "flight": {
+      "operations": [
+        {
+          "method": "GET",
+          "parameters": [
+            { "name": "id", "type": "[long]", "required": false, "maximum": 100 },
+            { "name": "number", "type": "string", "description": "Filter by this flight number.", "required": false },
+            { "name": "limit", "type": "long", "default": 25, "minimum": 1, "maximum": 100 },
+            { "name": "offset", "type": "long", "default": 0, "minimum": 0 }
+          ],
+          "responses": {
+            "200": { "type": "[flight]" },
+            "401": { "type": "unit" }
+          }
+        },
+
+        {
+          "method": "GET",
+          "path": "/:id",
+          "responses": {
+            "200": { "type": "flight" },
+            "401": { "type": "unit" },
+            "404": { "type": "unit" }
+          }
+        },
+
+        {
+          "method": "POST",
+          "parameters": [
+            { "name": "number", "type": "string" }
+          ],
+          "responses": {
+            "201": { "type": "flight" },
+            "401": { "type": "unit" }
+          }
+        },
+
+        {
+          "method": "PATCH",
+          "path": "/:id",
+          "parameters": [
+            { "name": "number", "type": "string", "required": false }
+          ],
+          "responses": {
+            "200": { "type": "flight" },
+            "401": { "type": "unit" },
+            "404": { "type": "unit" }
+          }
+        },
+
+        {
+          "method": "DELETE",
+          "path": "/:id",
+          "responses": {
+            "204": { "type": "unit" },
+            "401": { "type": "unit" },
+            "404": { "type": "unit" }
+          }
+        },
+
+        {
+          "method": "GET",
+          "path": "/:id/passengers",
+          "responses": {
+            "200": { "type": "[passenger]" },
+            "401": { "type": "unit" },
+            "404": { "type": "unit" }
+          }
+        },
+
+        {
+          "method": "POST",
+          "path": "/:id/passengers",
+          "body": { "type": "passenger_form" },
+          "responses": {
+            "201": { "type": "passenger" },
+            "401": { "type": "unit" },
+            "404": { "type": "unit" }
+          }
+        }
+      ]
+    }
+  }
+}

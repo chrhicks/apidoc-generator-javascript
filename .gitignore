@@ -29,3 +29,5 @@ node_modules
 # Project
 out/
 reference-clients/
+test/dist
+dist/

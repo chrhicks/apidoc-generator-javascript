@@ -12,6 +12,7 @@ release-minor: set-minor-version release
 release-major: set-major-version release
 
 docker-build:
+	npm run build
 	docker build -t $(DOCKER_USERNAME)/$(APP_NAME):$(VERSION) .
 
 docker-push:

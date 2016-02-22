@@ -1,0 +1,380 @@
+{
+  "apidoc": {
+    "version": "0.11.10"
+  },
+  "name": "apidoc-test-light",
+  "organization": {
+    "key": "bryzek"
+  },
+  "application": {
+    "key": "apidoc-test-light"
+  },
+  "namespace": "com.bryzek.apidoc.test.light.v0",
+  "version": "0.0.2",
+  "info": {},
+  "headers": [],
+  "imports": [],
+  "enums": [],
+  "unions": [],
+  "models": [
+    {
+      "name": "carrier",
+      "plural": "carriers",
+      "fields": [
+        {
+          "name": "id",
+          "type": "long",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "example": "United Airlines"
+        }
+      ]
+    },
+    {
+      "name": "flight",
+      "plural": "flights",
+      "fields": [
+        {
+          "name": "id",
+          "type": "long",
+          "required": true
+        },
+        {
+          "name": "carrier",
+          "type": "carrier",
+          "required": true
+        },
+        {
+          "name": "number",
+          "type": "string",
+          "required": true,
+          "example": "UA247"
+        }
+      ]
+    },
+    {
+      "name": "passenger",
+      "plural": "passengers",
+      "fields": [
+        {
+          "name": "id",
+          "type": "long",
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "passenger_form",
+      "plural": "passenger_forms",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "type": "flight",
+      "plural": "flights",
+      "operations": [
+        {
+          "method": "GET",
+          "path": "/flights",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "[long]",
+              "location": "Query",
+              "required": false,
+              "maximum": 100
+            },
+            {
+              "name": "number",
+              "type": "string",
+              "location": "Query",
+              "required": false,
+              "description": "Filter by this flight number."
+            },
+            {
+              "name": "limit",
+              "type": "long",
+              "location": "Query",
+              "required": true,
+              "default": "25",
+              "minimum": 1,
+              "maximum": 100
+            },
+            {
+              "name": "offset",
+              "type": "long",
+              "location": "Query",
+              "required": true,
+              "default": "0",
+              "minimum": 0
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 200
+                }
+              },
+              "type": "[flight]"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 401
+                }
+              },
+              "type": "unit"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/flights/:id",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "long",
+              "location": "Path",
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 200
+                }
+              },
+              "type": "flight"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 401
+                }
+              },
+              "type": "unit"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 404
+                }
+              },
+              "type": "unit"
+            }
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "/flights",
+          "parameters": [
+            {
+              "name": "number",
+              "type": "string",
+              "location": "Form",
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 201
+                }
+              },
+              "type": "flight"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 401
+                }
+              },
+              "type": "unit"
+            }
+          ]
+        },
+        {
+          "method": "PATCH",
+          "path": "/flights/:id",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "long",
+              "location": "Path",
+              "required": true
+            },
+            {
+              "name": "number",
+              "type": "string",
+              "location": "Form",
+              "required": false
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 200
+                }
+              },
+              "type": "flight"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 401
+                }
+              },
+              "type": "unit"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 404
+                }
+              },
+              "type": "unit"
+            }
+          ]
+        },
+        {
+          "method": "DELETE",
+          "path": "/flights/:id",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "long",
+              "location": "Path",
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 204
+                }
+              },
+              "type": "unit"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 401
+                }
+              },
+              "type": "unit"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 404
+                }
+              },
+              "type": "unit"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/flights/:id/passengers",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "long",
+              "location": "Path",
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 200
+                }
+              },
+              "type": "[passenger]"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 401
+                }
+              },
+              "type": "unit"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 404
+                }
+              },
+              "type": "unit"
+            }
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "/flights/:id/passengers",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "long",
+              "location": "Path",
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 201
+                }
+              },
+              "type": "passenger"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 401
+                }
+              },
+              "type": "unit"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 404
+                }
+              },
+              "type": "unit"
+            }
+          ],
+          "body": {
+            "type": "passenger_form"
+          }
+        }
+      ],
+      "path": "/flights"
+    }
+  ]
+}

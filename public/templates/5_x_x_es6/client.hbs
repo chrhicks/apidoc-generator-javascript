@@ -1,0 +1,17 @@
+{{#resources}}
+import {{{className}}} from './{{{fileName}}}';
+{{/resources}}
+
+export default class {
+ constructor (host) {
+   this.host = host;
+   {{#resources}}
+   this.{{className}} = new {{className}}(host);
+   {{/resources}}
+ }
+
+ getHost () {
+   return this.host;
+ }
+
+}

@@ -2,10 +2,10 @@ FROM node:5
 
 ENV NODE_ENV production
 
-ADD . /opt/apidoc/service
+ADD ./dist /opt/apidoc/service
 
 WORKDIR /opt/apidoc/service
 
-RUN npm install --production
+RUN npm install
 
 CMD ["node", "server.js"]
