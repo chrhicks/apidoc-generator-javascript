@@ -2,17 +2,15 @@
 import fs from 'fs';
 import expect from 'expect';
 
-import { generate } from '../lib/generators/5_x_x_es6';
+import { generate } from '../lib/generators/node_5_es6';
 
-const CLIENT_FILE = 'src/client.js';
+const CLIENT_FILE = 'client.js';
 
 function generateClient() {
   const json = fs.readFileSync(`${process.cwd()}/reference-api/api-light-service.json`).toString('utf-8');
   const clientFiles = generate(JSON.parse(json));
   clientFiles.forEach((file) => {
-    if (file.name.startsWith('src')) {
-      fs.writeFileSync(`${process.cwd()}/test/dist/${file.fileName}`, file.contents);
-    }
+    fs.writeFileSync(`${process.cwd()}/test/dist/${file.name}`, file.contents);
   });
 }
 
@@ -66,7 +64,7 @@ function deleteFlightById (id) {
   return client.Flights.deleteById(id);
 }
 
-describe('node 5.x.x client', () => {
+describe('node node_5_es6 client', () => {
   it('should have access to client', () => {
     expect(client.getHost()).toEqual(CLIENT_HOST);
   });
