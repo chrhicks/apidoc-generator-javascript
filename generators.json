@@ -4,5 +4,11 @@
     "name": "Node (0.12.x)",
     "language": "JavaScript",
     "description": "Node client using the request http lib"
+  },
+  {
+    "key": "5_x_x_es6",
+    "name": "Node (5.x.x) ES6 / Babel",
+    "language": "JavaScript",
+    "description": "Node 5 client written in ES6 (requires babel or other compiler)"
   }
 ]

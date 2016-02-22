@@ -4,6 +4,11 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "build": "rm -rf dist && npm-run-all build:*",
+    "build:lib": "babel lib --out-dir dist/lib",
+    "build:server": "babel server.js --out-dir dist",
+    "build:config": "cp package.json generators.json dist/",
+    "build:assets": "cp -R public dist/public",
     "test": "NODE_ENV=test mocha --compilers js:babel-core/register --recursive",
     "dev": "nodemon"
   },
@@ -17,6 +22,7 @@
     "mkdirp": "0.5.1",
     "mocha": "^2.4.5",
     "nodemon": "^1.8.1",
+    "npm-run-all": "^1.5.1",
     "require-dir": "0.3.0",
     "tap-spec": "4.1.1",
     "tape": "4.2.2"

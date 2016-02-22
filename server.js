@@ -8,7 +8,7 @@ var app = express();
 var port = process.env.PORT || 9030;
 
 var node12Generator = require('./lib/generators/0_12');
-var node5_X_X_ES6 = require('./lib/generators/5.x.x_es6');
+var node5_X_X_ES6 = require('./lib/generators/5_x_x_es6');
 
 
 app.set('port', port);
@@ -18,7 +18,7 @@ var generators = require('./generators');
 
 var generatorModules = {
   'node_0_12': node12Generator,
-  '5.x.x_es6': node5_X_X_ES6
+  '5_x_x_es6': node5_X_X_ES6
 };
 
 app.get('/generators', function (req, res) {
@@ -60,6 +60,10 @@ app.post('/invocations/:key', function (req, res) {
 
   var generator = generatorModules[invocationKey];
   var service = req.body.service;
+
+  if (!service) {
+      throw new Error(`service json not found for service ${invocationKey}`);
+  }
 
   res.send({
     source: '',

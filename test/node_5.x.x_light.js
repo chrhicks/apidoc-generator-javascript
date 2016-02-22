@@ -2,7 +2,7 @@
 import fs from 'fs';
 import expect from 'expect';
 
-import { generate } from '../lib/generators/5.x.x_es6';
+import { generate } from '../lib/generators/5_x_x_es6';
 
 const CLIENT_FILE = 'src/client.js';
 
@@ -10,7 +10,7 @@ function generateClient() {
   const json = fs.readFileSync(`${process.cwd()}/reference-api/api-light-service.json`).toString('utf-8');
   const clientFiles = generate(JSON.parse(json));
   clientFiles.forEach((file) => {
-    if (file.fileName.startsWith('src')) {
+    if (file.name.startsWith('src')) {
       fs.writeFileSync(`${process.cwd()}/test/dist/${file.fileName}`, file.contents);
     }
   });

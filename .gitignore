@@ -30,3 +30,4 @@ node_modules
 out/
 reference-clients/
 test/dist
+dist/
