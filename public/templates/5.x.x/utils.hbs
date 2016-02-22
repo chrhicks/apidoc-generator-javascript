@@ -33,10 +33,6 @@ export function doRequest (options) {
   var startMs = Date.now();
   options = options || {};
 
-  if (!options.json) {
-    options.json = true;
-  }
-
   options.qsStringifyOptions = {
     arrayFormat: 'repeat'
   };

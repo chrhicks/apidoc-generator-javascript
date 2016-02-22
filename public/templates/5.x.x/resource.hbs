@@ -1,3 +1,5 @@
+import { isObject, doRequest } from './utils';
+
 export default class {
   constructor (host) {
     this.host = host;
@@ -29,8 +31,11 @@ export default class {
       };
       const requestOpts = {
         qs: queryString,
-        {{#if requestCanHaveBody}}
+        {{#if isApplicationJson}}
         json: options.data,
+        {{/if}}
+        {{#if isFormUrlEncoded}}
+        form: options.data,
         {{/if}}
         uri: url,
         method: '{{method}}'
@@ -44,7 +49,11 @@ export default class {
               {{#if isUnitType}}
             return Promise.resolve();
               {{else}}
-            return Promise.resolve(serverResponse.body);
+            if (requestOpts.json) {
+              return Promise.resolve(serverResponse.body);
+            } else {
+              return Promise.resolve(JSON.parse(serverResponse.body));
+            }
               {{/if}}
             {{else}}
             return Promise.reject({ status: serverResponse.statusCode, data: serverResponse.body });
