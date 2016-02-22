@@ -2,7 +2,7 @@
 import fs from 'fs';
 import expect from 'expect';
 
-import { generate } from '../lib/generators/5.x.x';
+import { generate } from '../lib/generators/5.x.x_es6';
 
 const CLIENT_FILE = 'src/client.js';
 
