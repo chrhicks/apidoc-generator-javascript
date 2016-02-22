@@ -6,6 +6,12 @@
     "description": "Node client using the request http lib"
   },
   {
+    "key": "5_x_x_es5",
+    "name": "Node (5.x.x)",
+    "language": "JavaScript",
+    "description": "Node 5 client - compiled version of 5_x_x_es6"
+  },
+  {
     "key": "5_x_x_es6",
     "name": "Node (5.x.x) ES6 / Babel",
     "language": "JavaScript",

@@ -9,6 +9,7 @@ var port = process.env.PORT || 9030;
 
 var node12Generator = require('./lib/generators/0_12');
 var node5_X_X_ES6 = require('./lib/generators/5_x_x_es6');
+var node5_X_X_ES5 = require('./lib/generators/5_x_x_es5');
 
 
 app.set('port', port);
@@ -18,7 +19,8 @@ var generators = require('./generators');
 
 var generatorModules = {
   'node_0_12': node12Generator,
-  '5_x_x_es6': node5_X_X_ES6
+  '5_x_x_es6': node5_X_X_ES6,
+  '5_x_x_es5': node5_X_X_ES5
 };
 
 app.get('/generators', function (req, res) {
