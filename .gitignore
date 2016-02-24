@@ -31,3 +31,4 @@ out/
 reference-clients/
 test/dist
 dist/
+public/packages

@@ -1,24 +1,34 @@
-/*global describe, it */
+/*global describe, before, it */
 import fs from 'fs';
 import expect from 'expect';
+import mkdirp from 'mkdirp';
 
 import { generate } from '../lib/generators/node_5_es6';
 
-const CLIENT_FILE = 'client.js';
-
-function generateClient() {
+function generateClient () {
   const json = fs.readFileSync(`${process.cwd()}/reference-api/api-light-service.json`).toString('utf-8');
-  const clientFiles = generate(JSON.parse(json));
-  clientFiles.forEach((file) => {
-    fs.writeFileSync(`${process.cwd()}/test/dist/${file.name}`, file.contents);
-  });
+  mkdirp.sync(`${process.cwd()}/test/dist/light`);
+  return generate(JSON.parse(json))
+    .then((clientFiles) => {
+      clientFiles.forEach((file) => {
+        fs.writeFileSync(`${process.cwd()}/test/dist/light/${file.name}`, file.contents);
+      });
+      return Promise.resolve();
+    });
 }
 
-generateClient();
+function randInt () {
+  const min = 1;
+  const max = 9999999;
+  return parseInt(Math.random() * (max - min) + min);
+}
 
-const Client = require(`./dist/${CLIENT_FILE}`).default;
+function generateFlightNumber () {
+  return `flight_${randInt()}`;
+}
+
 const CLIENT_HOST = 'http://localhost:9020';
-const client = new Client(CLIENT_HOST);
+var client;
 
 function createFlight (number) {
   return client.Flights.post({
@@ -64,7 +74,14 @@ function deleteFlightById (id) {
   return client.Flights.deleteById(id);
 }
 
-describe('node node_5_es6 client', () => {
+describe('node node_5_es6 client (LIGHT)', () => {
+  before(() => {
+    return generateClient().then(() => {
+      const Client = require('./dist/light/client.js').default;
+      client = new Client(CLIENT_HOST);
+    });
+  });
+
   it('should have access to client', () => {
     expect(client.getHost()).toEqual(CLIENT_HOST);
   });
@@ -74,7 +91,7 @@ describe('node node_5_es6 client', () => {
   });
 
   it('should POST with form data', (done) => {
-    const flightNumber = `flight_${Date.now()}`;
+    const flightNumber = generateFlightNumber();
     createFlight(flightNumber).then((result) => {
       expect(result.number).toEqual(flightNumber);
       done();
@@ -84,8 +101,8 @@ describe('node node_5_es6 client', () => {
   });
 
   it('should POST with json data', (done) => {
-    const flightNumber = `flight_${Date.now()}`;
-    const passengerName = `testPassenger_${Date.now()}`;
+    const flightNumber = generateFlightNumber();
+    const passengerName = `testPassenger_${randInt()}`;
     createFlight(flightNumber)
       .then((flight) => {
         return addPassenger(passengerName, flight.id);
@@ -100,7 +117,7 @@ describe('node node_5_es6 client', () => {
   });
 
   it('should GET flights', (done) => {
-    const flightNumber = `flight_${Date.now()}`;
+    const flightNumber = generateFlightNumber();
     createFlight(flightNumber)
       .then(() => {
         return getFlights();
@@ -113,8 +130,8 @@ describe('node node_5_es6 client', () => {
   });
 
   it('should GET flights by id', (done) => {
-    const flightNumber1 = `flight1_${Date.now()}`;
-    const flightNumber2 = `flight2_${Date.now()}`;
+    const flightNumber1 = generateFlightNumber();
+    const flightNumber2 = generateFlightNumber();
 
     Promise.all([createFlight(flightNumber1), createFlight(flightNumber2)])
       .then(([flight1, flight2]) => {
@@ -135,7 +152,7 @@ describe('node node_5_es6 client', () => {
   });
 
   it('should GET flight by number', (done) => {
-    const flightNumber = `flight_${Date.now()}`;
+    const flightNumber = generateFlightNumber();
     createFlight(flightNumber)
       .then(() => {
         return getFlightByNumber(flightNumber);
@@ -158,7 +175,7 @@ describe('node node_5_es6 client', () => {
   });
 
   it('should GET flight by id (url param)', (done) => {
-    const flightNumber = `flight_${Date.now()}`;
+    const flightNumber = generateFlightNumber();
     createFlight(flightNumber)
       .then((flight) => {
         return getFlightById(flight.id);
@@ -171,7 +188,7 @@ describe('node node_5_es6 client', () => {
   });
 
   it('should PATCH a flight', (done) => {
-    const flightNumber = `flight_${Date.now()}`;
+    const flightNumber = generateFlightNumber();
     const updatedFlightNumber = `${flightNumber}_updated`;
     createFlight(flightNumber)
       .then((flight) => {
@@ -185,7 +202,7 @@ describe('node node_5_es6 client', () => {
   });
 
   it('should PATCH a flight and reject', (done) => {
-    const flightNumber = `flight_${Date.now()}`;
+    const flightNumber = generateFlightNumber();
     const updatedFlightNumber = `${flightNumber}_updated`;
     const invalidId = 999499999;
 
@@ -204,7 +221,7 @@ describe('node node_5_es6 client', () => {
   });
 
   it('should delete a flight', (done) => {
-    const flightNumber = `flight_${Date.now()}`;
+    const flightNumber = generateFlightNumber();
     createFlight(flightNumber)
       .then((flight) => {
         return deleteFlightById(flight.id);

@@ -3,10 +3,11 @@ import {{{className}}} from './{{{fileName}}}';
 {{/resources}}
 
 export default class {
- constructor (host) {
+ constructor (host, auth, headers) {
+   console.log('Client constucted with', host, auth, headers);
    this.host = host;
    {{#resources}}
-   this.{{className}} = new {{className}}(host);
+   this.{{className}} = new {{className}}(host, auth, headers);
    {{/resources}}
  }
 

@@ -1,8 +1,11 @@
 import { isObject, doRequest } from './utils';
 
 export default class {
-  constructor (host) {
+  constructor (host, auth, headers) {
+    console.log('Resource constucted with', host, auth, headers);
     this.host = host;
+    this.auth = auth;
+    this.headers = headers;
   }
 
   {{#operations}}
@@ -21,6 +24,12 @@ export default class {
       if (!options.data) {
         return Promise.reject(new Error('options.data property is required.'));
       }
+      
+        {{#if discriminator}}
+      if (!options.data.{{discriminator}}) {
+        return Promise.reject(new Error('options.data.{{discriminator}} must be defined'));
+      }
+        {{/if}}
       {{/if}}
 
       const url = `${this.host}{{{endpointUriStr}}}`;
@@ -30,6 +39,7 @@ export default class {
         {{/queryParams}}
       };
       const requestOpts = {
+        auth: this.auth,
         qs: queryString,
         {{#if isApplicationJson}}
         json: options.data,

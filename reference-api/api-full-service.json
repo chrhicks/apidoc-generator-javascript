@@ -1,0 +1,494 @@
+{
+  "apidoc": {
+    "version": "0.11.10"
+  },
+  "name": "apidoc-test-full",
+  "organization": {
+    "key": "bryzek"
+  },
+  "application": {
+    "key": "apidoc-test-full"
+  },
+  "namespace": "com.bryzek.apidoc.test.full.v0",
+  "version": "0.0.4",
+  "info": {},
+  "headers": [],
+  "imports": [
+    {
+      "uri": "http://www.apidoc.me/bryzek/apidoc-test-light/0.0.2/service.json",
+      "namespace": "com.bryzek.apidoc.test.light.v0",
+      "organization": {
+        "key": "bryzek"
+      },
+      "application": {
+        "key": "apidoc-test-light"
+      },
+      "version": "0.0.2",
+      "enums": [],
+      "unions": [],
+      "models": [
+        "carrier",
+        "flight",
+        "passenger",
+        "passenger_form"
+      ]
+    }
+  ],
+  "enums": [
+    {
+      "name": "system_user",
+      "plural": "system_users",
+      "values": [
+        {
+          "name": "system"
+        },
+        {
+          "name": "anonymous"
+        }
+      ]
+    }
+  ],
+  "unions": [
+    {
+      "name": "user",
+      "plural": "users",
+      "types": [
+        {
+          "type": "registered_user"
+        },
+        {
+          "type": "guest_user"
+        },
+        {
+          "type": "system_user"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "discriminator": "discriminator"
+    }
+  ],
+  "models": [
+    {
+      "name": "guest_user",
+      "plural": "guest_users",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true,
+          "description": "Internal unique identifier for this user."
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "registered_user",
+      "plural": "registered_users",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "type": "com.bryzek.apidoc.test.light.v0.models.flight",
+      "plural": "flights",
+      "operations": [
+        {
+          "method": "GET",
+          "path": "/flights",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "[long]",
+              "location": "Query",
+              "required": false,
+              "maximum": 100
+            },
+            {
+              "name": "number",
+              "type": "string",
+              "location": "Query",
+              "required": false,
+              "description": "Filter by this flight number."
+            },
+            {
+              "name": "limit",
+              "type": "long",
+              "location": "Query",
+              "required": true,
+              "default": "25",
+              "minimum": 1,
+              "maximum": 100
+            },
+            {
+              "name": "offset",
+              "type": "long",
+              "location": "Query",
+              "required": true,
+              "default": "0",
+              "minimum": 0
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 200
+                }
+              },
+              "type": "[com.bryzek.apidoc.test.light.v0.models.flight]"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 401
+                }
+              },
+              "type": "unit"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/flights/:id",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "long",
+              "location": "Path",
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 200
+                }
+              },
+              "type": "com.bryzek.apidoc.test.light.v0.models.flight"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 401
+                }
+              },
+              "type": "unit"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 404
+                }
+              },
+              "type": "unit"
+            }
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "/flights",
+          "parameters": [
+            {
+              "name": "number",
+              "type": "string",
+              "location": "Form",
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 201
+                }
+              },
+              "type": "com.bryzek.apidoc.test.light.v0.models.flight"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 401
+                }
+              },
+              "type": "unit"
+            }
+          ]
+        },
+        {
+          "method": "PATCH",
+          "path": "/flights/:id",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "long",
+              "location": "Path",
+              "required": true
+            },
+            {
+              "name": "number",
+              "type": "string",
+              "location": "Form",
+              "required": false
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 200
+                }
+              },
+              "type": "com.bryzek.apidoc.test.light.v0.models.flight"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 401
+                }
+              },
+              "type": "unit"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 404
+                }
+              },
+              "type": "unit"
+            }
+          ]
+        },
+        {
+          "method": "DELETE",
+          "path": "/flights/:id",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "long",
+              "location": "Path",
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 204
+                }
+              },
+              "type": "unit"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 401
+                }
+              },
+              "type": "unit"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 404
+                }
+              },
+              "type": "unit"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/flights/:id/passengers",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "long",
+              "location": "Path",
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 200
+                }
+              },
+              "type": "[com.bryzek.apidoc.test.light.v0.models.passenger]"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 401
+                }
+              },
+              "type": "unit"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 404
+                }
+              },
+              "type": "unit"
+            }
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "/flights/:id/passengers",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "long",
+              "location": "Path",
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 201
+                }
+              },
+              "type": "com.bryzek.apidoc.test.light.v0.models.passenger"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 401
+                }
+              },
+              "type": "unit"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 404
+                }
+              },
+              "type": "unit"
+            }
+          ],
+          "body": {
+            "type": "com.bryzek.apidoc.test.light.v0.models.passenger_form"
+          }
+        }
+      ],
+      "path": "/flights"
+    },
+    {
+      "type": "user",
+      "plural": "users",
+      "operations": [
+        {
+          "method": "GET",
+          "path": "/users",
+          "parameters": [],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 200
+                }
+              },
+              "type": "[user]"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 401
+                }
+              },
+              "type": "unit"
+            }
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "/users/:id",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "string",
+              "location": "Path",
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 200
+                }
+              },
+              "type": "user"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 401
+                }
+              },
+              "type": "unit"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 404
+                }
+              },
+              "type": "unit"
+            }
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "/users",
+          "parameters": [],
+          "responses": [
+            {
+              "code": {
+                "integer": {
+                  "value": 201
+                }
+              },
+              "type": "user"
+            },
+            {
+              "code": {
+                "integer": {
+                  "value": 401
+                }
+              },
+              "type": "unit"
+            }
+          ],
+          "body": {
+            "type": "user"
+          }
+        }
+      ],
+      "path": "/users"
+    }
+  ]
+}
