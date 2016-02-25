@@ -33,12 +33,39 @@ describe('node node_5_es6 client (FULL)', () => {
       email: '12343@test.com',
       discriminator: 'guest_user'
     })
-    .then((user) => {
+    .then(() => {
       done();
     })
+    .catch((error) => done(error));
+  });
+
+  it('should give error when no discriminator present (will timeout if failing)', (done) => {
+    postUser({
+      id: '99999',
+      email: '99999@test.com'
+    })
+    .then(() => {
+      done(new Error('Got success when testing for failure!'));
+    })
     .catch((error) => {
-      done(error);
+      expect(error.message).toEqual('options.data.discriminator must be defined. Available options for [user] are: registered_user, guest_user, system_user, string');
+      done();
     });
+  });
+
+  it('should POST /users with an enum user (as string)', (done) => {
+    postUser('system')
+    .then(() => done())
+    .catch((error) => done(error));
+  });
+
+  it('should POST /users with an enum user (with discriminator)', (done) => {
+    postUser({
+      discriminator: 'system_user',
+      value: 'anonymous'
+    })
+    .then(() => done())
+    .catch((error) => done(error));
   });
 });
 

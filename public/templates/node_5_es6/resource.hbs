@@ -1,4 +1,9 @@
-import { isObject, doRequest } from './utils';
+import { isObject,
+          doRequest,
+          requiresDiscriminator,
+          getTypesForUnion,
+          dataIsAndCanBePrimitive,
+          getApidocTypeForPrimitive } from './utils';
 
 export default class {
   constructor (host, auth, headers) {
@@ -10,6 +15,22 @@ export default class {
 
   {{#operations}}
     {{functionName}} ({{{functionParams}}}) {
+      const operationSettings = {
+        requiresOptions: {{requiresOptions}},
+        requiresBody: {{requiresBody}},
+        bodyType: '{{bodyType}}',
+        discriminator: '{{discriminator}}',
+        queryParams: [
+          {{#queryParams}}
+          { name: '{{name}}', nameCamelCase: '{{nameCamelCase}}' },
+          {{/queryParams}}
+        ],
+        url: `${this.host}{{{endpointUriStr}}}`,
+        isApplicationJson: {{isApplicationJson}},
+        isFormUrlEncoded: {{isFormUrlEncoded}},
+        method: '{{method}}'
+      };
+
       {{#if requiresOptions}}
       // if options is not defined, set it
       options = options || {};
@@ -21,18 +42,29 @@ export default class {
       {{/if}}
 
       {{#if requiresBody}}
+      const bodyType = '{{bodyType}}';
+
       if (!options.data) {
         return Promise.reject(new Error('options.data property is required.'));
       }
-      
+
         {{#if discriminator}}
-      if (!options.data.{{discriminator}}) {
-        return Promise.reject(new Error('options.data.{{discriminator}} must be defined'));
+      if(dataIsAndCanBePrimitive(bodyType, options.data)) {
+        options.data = {
+          {{discriminator}}: getApidocTypeForPrimitive(bodyType, options.data),
+          value: options.data
+        };
+      }
+
+      if (!options.data['{{discriminator}}']) {
+        return Promise.reject(new Error(`options.data.{{discriminator}} must be defined. Available options for [${bodyType}] are: ${getTypesForUnion(bodyType).join(', ')}`));
       }
         {{/if}}
       {{/if}}
 
+      // TODO: MERGE WITH RESULT OF getRequestOptions
       const url = `${this.host}{{{endpointUriStr}}}`;
+
       const queryString = {
         {{#queryParams}}
         {{name}}: options.{{nameCamelCase}},
