@@ -14,7 +14,9 @@ describe('node node_5_es6 client (FULL)', () => {
     return generateClient().then(() => {
       const Client = require('./dist/full/client.js').default;
       const auth = { user: 'node_5_es6' };
-      client = new Client(CLIENT_HOST, auth);
+      const headers = { 'test-header': 'test-header-value' };
+
+      client = new Client(CLIENT_HOST, auth, headers);
     });
   });
 
@@ -66,6 +68,14 @@ describe('node node_5_es6 client (FULL)', () => {
     })
     .then(() => done())
     .catch((error) => done(error));
+  });
+
+  it('should GET /users which requires a header', (done) => {
+    client.Users.get()
+      .then(() => {
+        done();
+      })
+      .catch((error) => done(error));
   });
 });
 

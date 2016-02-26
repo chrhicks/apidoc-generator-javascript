@@ -17,9 +17,10 @@ export default class {
         .then((opts) => {
           const uri = `${this.host}{{{endpointUriStr}}}`;
           const auth = this.auth;
-
+          const headers = this.headers || {};
+          
           // Layer in some options local to this class
-          const requestOpts = Object.assign({}, opts, {
+          const requestOpts = Object.assign({ headers }, opts, {
             auth,
             uri
           });
