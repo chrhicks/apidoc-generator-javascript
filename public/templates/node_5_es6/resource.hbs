@@ -11,21 +11,7 @@ export default class {
 
   {{#operations}}
     {{functionName}} ({{{functionParams}}}) {
-      const operationSettings = {
-        requiresOptions: {{requiresOptions}},
-        requiresBody: {{requiresBody}},
-        bodyType: '{{bodyType}}',
-        discriminator: '{{discriminator}}',
-        queryParams: [
-          {{#queryParams}}
-          { name: '{{name}}', nameCamelCase: '{{nameCamelCase}}' },
-          {{/queryParams}}
-        ],
-        url: `${this.host}{{{endpointUriStr}}}`,
-        isApplicationJson: {{isApplicationJson}},
-        isFormUrlEncoded: {{isFormUrlEncoded}},
-        method: '{{method}}'
-      };
+      const operationSettings = {{{settingsJson}}};
 
       return getRequestOptions(operationSettings{{#if requiresOptions}}, options{{/if}})
         .then((opts) => {
