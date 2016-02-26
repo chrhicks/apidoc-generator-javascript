@@ -6,6 +6,6 @@ ADD ./dist /opt/apidoc/service
 
 WORKDIR /opt/apidoc/service
 
-RUN npm install
+RUN npm install -q
 
 CMD ["node", "server.js"]
