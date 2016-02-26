@@ -17,17 +17,22 @@ export function getRequestOptions (settings, userOptions) {
     // Handle the body of the request (options.data as provided by the user)
     if (settings.requiresBody) {
       if (!options.data) {
-        return Promise.reject(new Error('options.data property is required.'));
+        reject(new Error('options.data property is required.'));
+        return;
       }
 
       if (settings.discriminator) {
         if(dataIsAndCanBePrimitive(settings.bodyType, options.data)) {
-          options.data[settings.discriminator] = getApidocTypeForPrimitive(settings.bodyType, options.data);
-          options.data.value = options.data;
+          const dataUpdate = {
+            [settings.discriminator]: getApidocTypeForPrimitive(settings.bodyType, options.data),
+            value: options.data
+          };
+          options.data = Object.assign({}, dataUpdate);
         }
 
         if (!options.data[settings.discriminator]) {
-          return Promise.reject(new Error(`options.data.${settings.discriminator} must be defined. Available options for [${settings.bodyType}] are: ${getTypesForUnion(settings.bodyType).join(', ')}`));
+          reject(new Error(`options.data.${settings.discriminator} must be defined. Available options for [${settings.bodyType}] are: ${getTypesForUnion(settings.bodyType).join(', ')}`));
+          return;
         }
       }
     }
@@ -41,12 +46,12 @@ export function getRequestOptions (settings, userOptions) {
     const form = settings.isFormUrlEncoded ? options.data : undefined;
     const method = settings.method;
 
-    return {
+    resolve({
       json,
       form,
       method,
       qs
-    };
+    });
   });
 }
 
@@ -72,7 +77,7 @@ export function getApidocTypeForPrimitive (bodyType, data) {
 
   if (dataType === 'string') {
     // Check if data matches an enum. Use the enum name if it does.
-    const enumForData = enums.find((e) => e.values.indexOf(data));
+    const enumForData = enums.find((e) => e.values.indexOf(data) !== -1);
 
     if (enumForData) {
         return enumForData.name;

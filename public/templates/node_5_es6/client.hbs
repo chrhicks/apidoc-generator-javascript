@@ -4,7 +4,6 @@ import {{{className}}} from './{{{fileName}}}';
 
 export default class {
  constructor (host, auth, headers) {
-   console.log('Client constucted with', host, auth, headers);
    this.host = host;
    {{#resources}}
    this.{{className}} = new {{className}}(host, auth, headers);
