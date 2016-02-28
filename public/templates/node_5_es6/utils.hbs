@@ -71,13 +71,18 @@ export function dataIsAndCanBePrimitive (bodyType, data) {
   }
 }
 
+// Within the context of a union type
 export function getApidocTypeForPrimitive (bodyType, data) {
   const typesForUnion = getTypesForUnion(bodyType);
   const dataType = typeof data;
 
   if (dataType === 'string') {
     // Check if data matches an enum. Use the enum name if it does.
-    const enumForData = enums.find((e) => e.values.indexOf(data) !== -1);
+    const enumForData = enums.find((e) => {
+      return !!e.values.find((v) => {
+        return v.name === data;
+      });
+    });
 
     if (enumForData) {
         return enumForData.name;
@@ -86,11 +91,16 @@ export function getApidocTypeForPrimitive (bodyType, data) {
     // default to 'string'
     return dataType;
   } else if (dataType === 'number') {
+    const containsDecimalPoint = data.toString().indexOf('.') !== -1;
+    const possibleApidocTypes =
+      containsDecimalPoint ? ['decimal', 'double'] : ['integer', 'long'];
+
+
     // Return the first one found. Buggy in that this code should know the
     // difference between each of the apidoc types. They are all 'number' in
     // JavaScript though.
     return typesForUnion.find((t) => {
-      return t === 'decimal' || t === 'double'|| t === 'integer' || t === 'long';
+      return possibleApidocTypes.indexOf(t) !== -1;
     });
   }
 }
