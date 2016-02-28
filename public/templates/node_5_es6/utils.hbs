@@ -95,11 +95,6 @@ export function getApidocTypeForPrimitive (bodyType, data) {
   }
 }
 
-export function requiresDiscriminator (bodyType) {
-  const isUnionType = unions.find((u) => u.name === bodyType);
-  return !!isUnionType;
-}
-
 export function getTypesForUnion (unionType) {
    const ut = unions.find((u) => u.name === unionType);
    if (ut) {
