@@ -123,16 +123,11 @@ function log (message) {
   }
 }
 
-function getQueryString (options) {
-  var params = [];
-  var qs = options.qs || {};
-
-  for (var key in qs) {
-    if (qs[key]) {
-      params.push(key + '=' + qs[key]);
-    }
-  }
-
+export function getQueryString (options) {
+  const qs = options.qs || {};
+  const params = Object.keys(qs).reduce((kvPairs, key) => {
+    return kvPairs.concat(`${key}=${qs[key]}`);
+  }, []);
   return params.join('&');
 }
 
