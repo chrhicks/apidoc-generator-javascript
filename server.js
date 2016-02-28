@@ -73,8 +73,10 @@ app.post('/invocations/:key', function (req, res) {
       source: '',
       files: files
     });
+  }).catch((error) => {
+    console.error(`Could not generate code for ${invocationKey}: ${error.message}`);
+    console.error(error.stack);
   });
-
 });
 
 app.listen(port, function () {
