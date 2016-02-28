@@ -8,16 +8,15 @@ import { generate } from '../lib/generators/node_5_es6';
 const CLIENT_HOST = 'http://localhost:9020';
 
 var client;
+var utils;
 
 describe('node node_5_es6 client (FULL)', () => {
   before(() => {
-    return generateClient().then(() => {
-      const Client = require('./dist/full/client.js').default;
-      const auth = { user: 'node_5_es6' };
-      const headers = { 'test-header': 'test-header-value' };
-
-      client = new Client(CLIENT_HOST, auth, headers);
-    });
+    if (client) {
+      return client;
+    } else {
+      return setupClient();
+    }
   });
 
   it('should have access to client', () => {
@@ -78,6 +77,82 @@ describe('node node_5_es6 client (FULL)', () => {
       .catch((error) => done(error));
   });
 });
+
+describe('node node_5_es6 utils', () => {
+  before(() => {
+    if (client) {
+      utils = require('./dist/full/utils.js');
+      return client;
+    } else {
+      return setupClient().then(() => {
+        utils = require('./dist/full/utils.js');
+      });
+    }
+  });
+
+  it('should have required utils', () => {
+    expect(utils).toBeA('object');
+  });
+
+  it('should generate a query string', () => {
+    const opts = {
+      qs: {
+        parameter1: 'value1',
+        'parameter-two': 'value-two'
+      }
+    };
+    const result = utils.getQueryString(opts);
+
+    expect(result).toEqual('parameter1=value1&parameter-two=value-two');
+  });
+
+  it('should generate a an empty query string', () => {
+    const opts = {};
+    const result = utils.getQueryString(opts);
+
+    expect(result).toEqual('');
+  });
+
+  it('should be able to determine if it is an object (array)', () => {
+    const arr = [1,2,3];
+    expect(utils.isObject(arr)).toEqual(false);
+  });
+
+  it('should be able to determine if it is an object (primitive)', () => {
+    const str = 'hello!';
+    expect(utils.isObject(str)).toEqual(false);
+  });
+
+  it('should be able to determine if it is an object (obj)', () => {
+    const obj = {};
+    expect(utils.isObject(obj)).toEqual(true);
+  });
+
+  it('should get types for union type', () => {
+    expect(utils.getTypesForUnion('user'))
+      .toEqual(['registered_user', 'guest_user', 'system_user', 'string']);
+  });
+
+  it('should convert javascript type to apidoc type (primitive)', () => {
+    expect(utils.getApidocTypeForPrimitive ('string', 'hello'))
+      .toEqual('string');
+  });
+
+  it('should convert javascript type to apidoc type (enum)', () => {
+    expect(utils.getApidocTypeForPrimitive ('user', 'system'))
+      .toEqual('system_user');
+  });
+});
+
+function setupClient () {
+  return generateClient().then(() => {
+    const Client = require('./dist/full/client.js').default;
+    const auth = { user: 'node_5_es6' };
+    const headers = { 'test-header': 'test-header-value' };
+
+    client = new Client(CLIENT_HOST, auth, headers);
+  });
+}
 
 function generateClient () {
   const json = fs.readFileSync(`${process.cwd()}/reference-api/api-full-service.json`).toString('utf-8');
