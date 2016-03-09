@@ -46,7 +46,7 @@ export function getRequestOptions (settings, userOptions) {
     const form = settings.isFormUrlEncoded ? options.data : undefined;
     const method = settings.method;
 
-    resolve(Object.asign(options, {
+    resolve(Object.assign(options, {
       json,
       form,
       method,
