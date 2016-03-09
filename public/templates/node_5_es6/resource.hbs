@@ -13,12 +13,12 @@ export default class {
     {{functionName}} ({{{functionParams}}}) {
       const operationSettings = {{{settingsJson}}};
 
-      return getRequestOptions(operationSettings{{#if requiresOptions}}, options{{/if}})
+      return getRequestOptions(operationSettings, options)
         .then((opts) => {
           const uri = `${this.host}{{{endpointUriStr}}}`;
-          const auth = this.auth;
+          const auth = opts.auth || this.auth;
           const headers = this.headers || {};
-          
+
           // Layer in some options local to this class
           const requestOpts = Object.assign({ headers }, opts, {
             auth,
