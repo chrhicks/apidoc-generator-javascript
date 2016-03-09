@@ -1,8 +1,8 @@
 import request from 'request';
 
 const showLogMessages = process.env.NODE_DEBUG ? process.env.NODE_DEBUG.indexOf('apidoc') !== -1 : false;
-const enums = JSON.parse('{{{enumsJson}}}');
-const unions = JSON.parse('{{{unionsJson}}}');
+const enums = {{{enumsJson}}};
+const unions = {{{unionsJson}}};
 
 export function getRequestOptions (settings, userOptions) {
   return new Promise ((resolve, reject) => {
