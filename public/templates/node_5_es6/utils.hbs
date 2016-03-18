@@ -39,7 +39,9 @@ export function getRequestOptions (settings, userOptions) {
 
     var qs = {};
     settings.queryParams.forEach((param) => {
+      if (options[param.nameCamelCase]) {
         qs[param.name] = options[param.nameCamelCase];
+      }
     });
 
     const json = settings.isApplicationJson ? options.data : undefined;
