@@ -13,7 +13,7 @@ var node5_X_X_ES5 = require('./lib/generators/node_5_es5');
 
 
 app.set('port', port);
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '1mb' }));
 app.use(express.static('public'));
 
 var generators = require('./generators');
