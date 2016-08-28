@@ -10,10 +10,11 @@ var port = process.env.PORT || 9030;
 var node12Generator = require('./lib/generators/0_12');
 var node5_X_X_ES6 = require('./lib/generators/node_5_es6');
 var node5_X_X_ES5 = require('./lib/generators/node_5_es5');
+var jsIsomorphic = require('./lib/generators/js_isomorphic');
 
 
 app.set('port', port);
-app.use(bodyParser.json({ limit: '1mb' }));
+app.use(bodyParser.json({ limit: '5mb' }));
 app.use(express.static('public'));
 
 var generators = require('./generators');
@@ -21,7 +22,8 @@ var generators = require('./generators');
 var generatorModules = {
   'node_0_12': node12Generator,
   'node_5_es6': node5_X_X_ES6,
-  'node_5_es5': node5_X_X_ES5
+  'node_5_es5': node5_X_X_ES5,
+  'js_isomorphic': jsIsomorphic
 };
 
 app.get('/generators', function (req, res) {

@@ -19,5 +19,13 @@
     "language": "JavaScript",
     "description": "Node 5 client written in ES6 (requires babel or other compiler)",
     "attributes": []
+  },
+  {
+    "key": "js_isomorphic",
+    "name": "Javascript (Isomorphic)",
+    "language": "JavaScript",
+    "description": "Node 6 client written in ES6 (requires babel or other compiler). Leverages @flowio/lib-apidoc",
+    "attributes": []
   }
+
 ]
