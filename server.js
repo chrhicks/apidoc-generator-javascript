@@ -70,6 +70,8 @@ app.post('/invocations/:key', function (req, res) {
       throw new Error(`service json not found for service ${invocationKey}`);
   }
 
+  console.log('Generating service:', service.namespace, service.name);
+
   generator.generate(service).then((files) => {
     res.send({
       source: '',
