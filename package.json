@@ -28,7 +28,7 @@
     "tape": "4.6.1"
   },
   "dependencies": {
-    "@flowio/lib-apidoc": "1.5.21",
+    "@flowio/lib-apidoc": "1.5.31",
     "babel-core": "6.16.0",
     "babel-preset-es2015": "6.16.0",
     "body-parser": "^1.14.1",
